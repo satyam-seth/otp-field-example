@@ -98,11 +98,11 @@ export class ConfigForm {
   onPassCustomRegexChange(e: any) {
     this.toggleFieldDisableState({
       id: 'custom-regex',
-      disabled: !e.target.checked,
+      disabled: e.target.checked,
     });
     this.toggleFieldDisableState({
       id: 'value-type',
-      disabled: e.target.checked,
+      disabled: !e.target.checked,
     });
   }
 
