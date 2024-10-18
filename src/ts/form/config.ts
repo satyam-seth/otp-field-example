@@ -1,4 +1,8 @@
-import { getOTPRegexForValueType, OTPValueType } from '@satyam-seth/otp-field';
+import {
+  getOTPRegexForValueType,
+  OTPFieldConfig,
+  OTPValueType,
+} from '@satyam-seth/otp-field';
 
 // eslint-disable-next-line import/prefer-default-export
 export class ConfigForm {
@@ -106,6 +110,32 @@ export class ConfigForm {
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  onSubmit(e: any) {
+    e.preventDefault();
+
+    console.log('form submit', e);
+
+    const formData = new FormData(e.target);
+    const boxCount = Number(formData.get('box-count'));
+    const onPasteBlur = Boolean(formData.get('on-paste-blur'));
+    const passCustomRegex = Boolean(formData.get('pass-custom-regex'));
+    const valueType = Number(formData.get('value-type'));
+    const customRegex = String(formData.get('custom-regex'));
+
+    const config: OTPFieldConfig = {
+      namespace: 'example',
+      boxCount,
+      onPasteBlur,
+      valueType: passCustomRegex === false ? valueType : undefined,
+      customRegex:
+        // TODO: validate user enter valid regex
+        passCustomRegex === true ? new RegExp(customRegex) : undefined,
+    };
+
+    console.log(config);
+  }
+
   skeleton() {
     const form = document.createElement('form');
     form.id = this.id;
@@ -117,6 +147,9 @@ export class ConfigForm {
     form.appendChild(this.customRegexFormGroup);
     form.appendChild(this.valueTypeFormGroup);
     form.appendChild(this.formButtonGroup);
+
+    // Add submit event
+    form.addEventListener('submit', this.onSubmit);
 
     return form;
   }
@@ -146,6 +179,7 @@ export class ConfigForm {
       id: 'on-paste-blur',
       name: 'on-paste-blur',
       inputType: 'checkbox',
+      required: false,
     });
   }
 
@@ -161,6 +195,7 @@ export class ConfigForm {
       id: 'pass-custom-regex',
       name: 'pass-custom-regex',
       inputType: 'checkbox',
+      required: false,
     });
 
     // add change event listener
@@ -216,6 +251,7 @@ export class ConfigForm {
   get valueTypeSelect() {
     const select = document.createElement('select');
     select.id = 'value-type';
+    select.name = 'value-type';
 
     Object.entries(this.valueTypeOptions).forEach(([k, v]) => {
       if (k && v) {
