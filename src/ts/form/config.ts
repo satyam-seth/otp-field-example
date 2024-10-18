@@ -164,7 +164,7 @@ export class ConfigForm {
     });
 
     // add change event listener
-    input.addEventListener('change', this.onPassCustomRegexChange);
+    input.addEventListener('change', this.onPassCustomRegexChange.bind(this));
 
     return input;
   }
