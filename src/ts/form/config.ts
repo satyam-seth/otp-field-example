@@ -21,12 +21,14 @@ export class ConfigForm {
     value?: string;
     extraAttributes?: { [key: string]: string };
     required?: boolean;
+    disabled?: boolean;
   }) {
     const input = document.createElement('input');
     input.id = config.id;
     input.name = config.name;
     input.type = config.inputType;
     input.required = config.required ?? true;
+    input.disabled = config.disabled ?? false;
 
     if (config.placeholder !== undefined) {
       input.placeholder = config.placeholder;
@@ -86,8 +88,27 @@ export class ConfigForm {
     return button;
   }
 
+  toggleFieldDisableState(config: { id: string; disabled: boolean }) {
+    const field = this.element.querySelector(`#${config.id}`)! as
+      | HTMLInputElement
+      | HTMLSelectElement;
+    field.disabled = !config.disabled;
+  }
+
+  onPassCustomRegexChange(e: any) {
+    this.toggleFieldDisableState({
+      id: 'custom-regex',
+      disabled: !e.target.checked,
+    });
+    this.toggleFieldDisableState({
+      id: 'value-type',
+      disabled: e.target.checked,
+    });
+  }
+
   skeleton() {
     const form = document.createElement('form');
+    form.id = this.id;
     form.className = 'config-form';
 
     form.appendChild(this.boxCountFormGroup);
@@ -136,11 +157,16 @@ export class ConfigForm {
   }
 
   get passCustomRegexInput() {
-    return this.getInputElement({
+    const input = this.getInputElement({
       id: 'pass-custom-regex',
       name: 'pass-custom-regex',
       inputType: 'checkbox',
     });
+
+    // add change event listener
+    input.addEventListener('change', this.onPassCustomRegexChange);
+
+    return input;
   }
 
   get customRegexLabel() {
@@ -152,10 +178,11 @@ export class ConfigForm {
 
   get customRegexInput() {
     return this.getInputElement({
-      id: 'custom-regex-type',
-      name: 'custom-regex-type',
+      id: 'custom-regex',
+      name: 'custom-regex',
       inputType: 'text',
       placeholder: 'enter custom regex',
+      disabled: true,
     });
   }
 
@@ -262,5 +289,20 @@ export class ConfigForm {
 
   build(parentElement: HTMLElement): void {
     parentElement.appendChild(this.skeleton());
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  get id() {
+    return 'config-form';
+  }
+
+  get element() {
+    const elem = document.getElementById(this.id);
+
+    if (elem === null) {
+      throw new Error(`Element with ID ${this.id} not found in the DOM.`);
+    }
+
+    return elem;
   }
 }
