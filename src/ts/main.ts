@@ -1,17 +1,11 @@
-import { OTPField } from '@satyam-seth/otp-field';
+import Driver from './driver';
 
 window.onload = () => {
-  // create otp field instance
-  const otpField = new OTPField({
-    namespace: 'example',
-    boxCount: 6,
-  });
-
   // get parent element
   const exampleSection = document.querySelector(
     'section.example'
   ) as HTMLElement;
 
-  // build otp field
-  otpField.build(exampleSection);
+  const example = new Driver('example');
+  example.build(exampleSection);
 };
