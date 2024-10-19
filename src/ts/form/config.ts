@@ -3,9 +3,15 @@ import {
   OTPFieldConfig,
   OTPValueType,
 } from '@satyam-seth/otp-field';
+import ConfigFormConfig from './types';
 
-// eslint-disable-next-line import/prefer-default-export
-export class ConfigForm {
+export default class ConfigForm {
+  config: ConfigFormConfig;
+
+  constructor(config: ConfigFormConfig) {
+    this.config = config;
+  }
+
   // eslint-disable-next-line class-methods-use-this
   getLabelElement(config: { text: string; for: string }) {
     const label = document.createElement('label');
@@ -114,8 +120,6 @@ export class ConfigForm {
   onSubmit(e: any) {
     e.preventDefault();
 
-    console.log('form submit', e);
-
     const formData = new FormData(e.target);
     const boxCount = Number(formData.get('box-count'));
     const onPasteBlur = Boolean(formData.get('on-paste-blur'));
@@ -124,7 +128,7 @@ export class ConfigForm {
     const customRegex = String(formData.get('custom-regex'));
 
     const config: OTPFieldConfig = {
-      namespace: 'example',
+      namespace: this.config.namespace,
       boxCount,
       onPasteBlur,
       valueType: passCustomRegex === false ? valueType : undefined,
@@ -133,7 +137,7 @@ export class ConfigForm {
         passCustomRegex === true ? new RegExp(customRegex) : undefined,
     };
 
-    console.log(config);
+    this.config.onSubmit(config);
   }
 
   skeleton() {
@@ -148,8 +152,11 @@ export class ConfigForm {
     form.appendChild(this.valueTypeFormGroup);
     form.appendChild(this.formButtonGroup);
 
-    // Add submit event
-    form.addEventListener('submit', this.onSubmit);
+    // Add submit event listener
+    form.addEventListener('submit', this.onSubmit.bind(this));
+
+    // Add reset event listener
+    form.addEventListener('reset', this.config.onReset);
 
     return form;
   }
@@ -327,9 +334,8 @@ export class ConfigForm {
     parentElement.appendChild(this.skeleton());
   }
 
-  // eslint-disable-next-line class-methods-use-this
   get id() {
-    return 'config-form';
+    return `${this.config.namespace}-config-form`;
   }
 
   get element() {
