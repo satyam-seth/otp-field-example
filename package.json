@@ -57,6 +57,6 @@
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
-    "@satyam-seth/otp-field": "1.0.3"
+    "@satyam-seth/otp-field": "1.0.4"
   }
 }
