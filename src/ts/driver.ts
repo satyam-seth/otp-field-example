@@ -15,6 +15,24 @@ export default class Driver {
     this.initializeConfigForm();
   }
 
+  getButton(config: {
+    namespace: string;
+    innerText: string;
+    disabled: boolean;
+    // eslint-disable-next-line no-unused-vars
+    onClick: (e: any) => void;
+  }) {
+    const button = document.createElement('button');
+    button.id = `${config.namespace}-btn`;
+    button.disabled = config.disabled;
+    button.innerText = config.innerText;
+
+    // add click event listener
+    button.addEventListener('click', config.onClick.bind(this));
+
+    return button;
+  }
+
   initializeConfigForm() {
     this.configForm = new ConfigForm({
       namespace: this.namespace,
@@ -38,6 +56,10 @@ export default class Driver {
     this.otpField?.destroy();
   }
 
+  focusOTPField() {
+    this.otpField?.focus();
+  }
+
   setConfigOutputTextAreaValue(value: string) {
     const configOutputTextArea = this.element.querySelector(
       `#config-output-textarea`
@@ -45,27 +67,23 @@ export default class Driver {
     configOutputTextArea.value = value;
   }
 
-  setButtonDisableState(selector: string, disabled: boolean) {
-    const copyConfigButton = this.element.querySelector(
-      selector
-    ) as HTMLButtonElement;
-    copyConfigButton.disabled = disabled;
-  }
+  setOtpFieldButtonsDisableState(disabled: boolean) {
+    const buttons = this.element.querySelectorAll<HTMLButtonElement>(
+      `.buttons-wrapper button`
+    );
 
-  setCopyConfigButtonDisableState(disabled: boolean) {
-    this.setButtonDisableState('#copy-config-btn', disabled);
-  }
-
-  setCopyOtpFieldValueButtonDisableState(disabled: boolean) {
-    this.setButtonDisableState('#copy-otp-field-value-btn', disabled);
+    buttons.forEach((btn) => {
+      // eslint-disable-next-line no-param-reassign
+      btn.disabled = disabled;
+    });
   }
 
   onConfigFormReset() {
-    this.otpFieldConfig = undefined;
     this.setConfigOutputTextAreaValue('');
-    this.setCopyConfigButtonDisableState(true);
+    this.setOtpFieldButtonsDisableState(true);
     this.destroyOtpField();
-    this.setCopyOtpFieldValueButtonDisableState(true);
+    this.otpField = undefined;
+    this.otpFieldConfig = undefined;
   }
 
   onConfigFormSubmit(config: OTPFieldConfig) {
@@ -75,9 +93,31 @@ export default class Driver {
 
     this.otpFieldConfig = config;
     this.setConfigOutputTextAreaValue(JSON.stringify(this.otpFieldConfig));
-    this.setCopyConfigButtonDisableState(false);
+    this.setOtpFieldButtonsDisableState(false);
     this.buildOtpField();
-    this.setCopyOtpFieldValueButtonDisableState(false);
+  }
+
+  copyOtpFieldIdToClipboard() {
+    navigator.clipboard.writeText(JSON.stringify(this.otpField?.id));
+  }
+
+  copyOtpFieldConfigToClipboard() {
+    navigator.clipboard.writeText(JSON.stringify(this.otpFieldConfig));
+  }
+
+  copyOtpFieldValueToClipboard() {
+    navigator.clipboard.writeText(JSON.stringify(this.otpField?.value));
+  }
+
+  clearOtpFieldValue() {
+    this.otpField?.clear();
+  }
+
+  toggleDisableOtpFieldClickHandler(e: any) {
+    const status = this.otpField?.isDisabled;
+    const btnStatusText = status ? 'Disable' : 'Enable';
+    this.otpField?.disable(!status);
+    e.target.innerText = `${btnStatusText} OTP Field`;
   }
 
   skeleton() {
@@ -97,24 +137,18 @@ export default class Driver {
     container.className = 'config-output-container';
 
     container.appendChild(this.configOutputTextArea);
-    container.appendChild(this.copyConfigButton);
+    container.appendChild(this.copyOtpFieldConfigButton);
 
     return container;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  get copyConfigButton() {
-    const button = document.createElement('button');
-    button.id = 'copy-config-btn';
-    button.disabled = true;
-    button.innerText = 'Copy OTPField Config';
-
-    // add click event listener
-    button.addEventListener('click', () => {
-      navigator.clipboard.writeText(JSON.stringify(this.otpFieldConfig));
+  get copyOtpFieldConfigButton() {
+    return this.getButton({
+      namespace: 'copy-otp-field-config',
+      innerText: 'Copy OTP Field Config',
+      disabled: true,
+      onClick: this.copyOtpFieldConfigToClipboard,
     });
-
-    return button;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -130,7 +164,7 @@ export default class Driver {
     otpFieldContainer.className = 'otp-field-container';
 
     otpFieldContainer.appendChild(this.otpFieldWrapper);
-    otpFieldContainer.appendChild(this.copyOtpFieldValueButton);
+    otpFieldContainer.appendChild(this.buttonsWrapper);
 
     return otpFieldContainer;
   }
@@ -142,18 +176,62 @@ export default class Driver {
     return otpFieldWrapper;
   }
 
-  get copyOtpFieldValueButton() {
-    const button = document.createElement('button');
-    button.id = 'copy-otp-field-value-btn';
-    button.disabled = true;
-    button.innerText = 'Copy OTPField Value';
+  get buttonsWrapper() {
+    const buttonWrapper = document.createElement('div');
+    buttonWrapper.className = 'buttons-wrapper';
 
-    // add click event listener
-    button.addEventListener('click', () => {
-      navigator.clipboard.writeText(JSON.stringify(this.otpField?.value));
+    buttonWrapper.appendChild(this.copyOtpFieldIdButton);
+    buttonWrapper.appendChild(this.copyOtpFieldValueButton);
+    buttonWrapper.appendChild(this.clearOtpFieldValueButton);
+    buttonWrapper.appendChild(this.focusOtpFieldButton);
+    buttonWrapper.appendChild(this.toggleDisableOtpFieldButton);
+
+    return buttonWrapper;
+  }
+
+  get copyOtpFieldIdButton() {
+    return this.getButton({
+      namespace: 'copy-otp-field-id',
+      innerText: 'Copy OTP Field ID',
+      disabled: true,
+      onClick: this.copyOtpFieldValueToClipboard,
     });
+  }
 
-    return button;
+  get copyOtpFieldValueButton() {
+    return this.getButton({
+      namespace: 'copy-otp-field-value',
+      innerText: 'Copy OTP Field Value',
+      disabled: true,
+      onClick: this.copyOtpFieldValueToClipboard,
+    });
+  }
+
+  get clearOtpFieldValueButton() {
+    return this.getButton({
+      namespace: 'clear-otp-field-value',
+      innerText: 'Clear OTP Field Value',
+      disabled: true,
+      onClick: this.clearOtpFieldValue,
+    });
+  }
+
+  get focusOtpFieldButton() {
+    return this.getButton({
+      namespace: 'focus-otp-field',
+      innerText: 'Focus OTP Field',
+      disabled: true,
+      onClick: this.focusOTPField,
+    });
+  }
+
+  get toggleDisableOtpFieldButton() {
+    return this.getButton({
+      namespace: 'toggle-disable-otp-field',
+      innerText: 'Disable OTP Field',
+      disabled: true,
+      onClick: this.toggleDisableOtpFieldClickHandler,
+    });
   }
 
   build(parentElement: HTMLElement): void {
