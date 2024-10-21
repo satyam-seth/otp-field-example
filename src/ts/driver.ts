@@ -194,7 +194,7 @@ export default class Driver {
       namespace: 'copy-otp-field-id',
       innerText: 'Copy OTP Field ID',
       disabled: true,
-      onClick: this.copyOtpFieldValueToClipboard,
+      onClick: this.copyOtpFieldIdToClipboard,
     });
   }
 
