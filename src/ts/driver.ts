@@ -67,9 +67,9 @@ export default class Driver {
     configOutputTextArea.value = value;
   }
 
-  setOtpFieldButtonsDisableState(disabled: boolean) {
+  setButtonsDisableState(disabled: boolean) {
     const buttons = this.element.querySelectorAll<HTMLButtonElement>(
-      `.buttons-wrapper button`
+      '.config-output-container button, .buttons-wrapper button'
     );
 
     buttons.forEach((btn) => {
@@ -80,7 +80,7 @@ export default class Driver {
 
   onConfigFormReset() {
     this.setConfigOutputTextAreaValue('');
-    this.setOtpFieldButtonsDisableState(true);
+    this.setButtonsDisableState(true);
     this.destroyOtpField();
     this.otpField = undefined;
     this.otpFieldConfig = undefined;
@@ -93,7 +93,7 @@ export default class Driver {
 
     this.otpFieldConfig = config;
     this.setConfigOutputTextAreaValue(JSON.stringify(this.otpFieldConfig));
-    this.setOtpFieldButtonsDisableState(false);
+    this.setButtonsDisableState(false);
     this.buildOtpField();
   }
 
