@@ -73,9 +73,14 @@ export default class ConfigForm {
   getFormGroup(config: {
     labelElement: HTMLLabelElement;
     inputElement: HTMLInputElement | HTMLSelectElement;
+    inline?: boolean;
   }) {
     const groupElement = document.createElement('div');
     groupElement.className = 'form-group';
+
+    if (config.inline === true) {
+      groupElement.classList.add('inline');
+    }
 
     groupElement.appendChild(config.labelElement);
     groupElement.appendChild(config.inputElement);
@@ -280,6 +285,7 @@ export default class ConfigForm {
     return this.getFormGroup({
       labelElement: this.onPasteBlurLabel,
       inputElement: this.onPasteBlurInput,
+      inline: true,
     });
   }
 
@@ -287,6 +293,7 @@ export default class ConfigForm {
     return this.getFormGroup({
       labelElement: this.passCustomRegexLabel,
       inputElement: this.passCustomRegexInput,
+      inline: true,
     });
   }
 

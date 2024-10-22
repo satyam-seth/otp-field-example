@@ -123,7 +123,7 @@ export default class Driver {
   skeleton() {
     const container = document.createElement('div');
     container.id = this.id;
-    container.className = 'config-form';
+    container.className = 'driver';
 
     this.configForm?.build(container);
     container.appendChild(this.configOutputContainer);
@@ -155,6 +155,7 @@ export default class Driver {
   get configOutputTextArea() {
     const textarea = document.createElement('textarea');
     textarea.id = 'config-output-textarea';
+    textarea.rows = 2;
     textarea.readOnly = true;
     return textarea;
   }
