@@ -6,5 +6,107 @@ section.example {
   display: grid;
   place-items: center;
 
-  @include otp-field;
+  .driver {
+    width: 100%;
+    max-width: 45rem;
+    padding: 2rem;
+    display: flex;
+    gap: 2rem;
+    flex-direction: column;
+  }
+
+  form {
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+
+    label {
+      font-size: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      gap: 1rem;
+      flex-direction: column;
+
+      &.inline {
+        flex-direction: row;
+      }
+    }
+
+    .form-button-group {
+      width: 100%;
+      display: flex;
+      gap: 1rem;
+    }
+  }
+
+  .config-output-container {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 0.625rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+
+    &[type='checkbox'] {
+      width: 2rem;
+    }
+  }
+
+  button {
+    width: 100%;
+    padding: 0.625rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    background-color: #a881af;
+
+    &[type='reset'] {
+      background-color: wheat;
+    }
+
+    &[type='submit'] {
+      background-color: #5dbea3;
+    }
+
+    &:active {
+      transform: scale(0.95);
+      transition: 300ms;
+    }
+  }
+
+  textarea {
+    width: 100%;
+    resize: none;
+    padding: 0.625rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+  }
+
+  .otp-field-container {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+
+    @include otp-field {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  .buttons-wrapper {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+
+    :last-child {
+      grid-column: 1/-1;
+    }
+  }
 }
