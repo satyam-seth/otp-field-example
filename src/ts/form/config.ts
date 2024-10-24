@@ -132,14 +132,24 @@ export default class ConfigForm {
     const valueType = Number(formData.get('value-type'));
     const customRegex = String(formData.get('custom-regex'));
 
+    // Attempt to create a RegExp object from user input
+    let regex: RegExp;
+    try {
+      // Remove the slashes from user input if present
+      const sanitizedInput = customRegex.replace(/^\/|\/g$/g, '');
+      regex = new RegExp(sanitizedInput);
+    } catch (error) {
+      // eslint-disable-next-line no-alert
+      alert('Please enter a valid regex pattern.');
+      return;
+    }
+
     const config: OTPFieldConfig = {
       namespace: this.config.namespace,
       boxCount,
       onPasteBlur,
       valueType: passCustomRegex === false ? valueType : undefined,
-      customRegex:
-        // TODO: validate user enter valid regex
-        passCustomRegex === true ? new RegExp(customRegex) : undefined,
+      customRegex: passCustomRegex === true ? regex : undefined,
     };
 
     this.config.onSubmit(config);
