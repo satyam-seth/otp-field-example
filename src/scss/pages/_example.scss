@@ -21,10 +21,6 @@ section.example {
     gap: 1rem;
     flex-direction: column;
 
-    label {
-      font-size: 1.25rem;
-    }
-
     .form-group {
       display: flex;
       gap: 1rem;
@@ -46,6 +42,10 @@ section.example {
     display: flex;
     gap: 1rem;
     flex-direction: column;
+  }
+
+  label {
+    font-size: 1.25rem;
   }
 
   input,
