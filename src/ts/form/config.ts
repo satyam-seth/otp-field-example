@@ -186,6 +186,10 @@ export default class ConfigForm {
       name: 'box-count',
       inputType: 'number',
       placeholder: 'enter box count',
+      extraAttributes: {
+        min: '1',
+        max: '1000',
+      },
     });
   }
 

@@ -67,6 +67,13 @@ export default class Driver {
     configOutputTextArea.value = value;
   }
 
+  setConfigOutputTextAreaDisableState(disabled: boolean) {
+    const configOutputTextArea = this.element.querySelector(
+      `#config-output-textarea`
+    ) as HTMLTextAreaElement;
+    configOutputTextArea.disabled = disabled;
+  }
+
   setButtonsDisableState(disabled: boolean) {
     const buttons = this.element.querySelectorAll<HTMLButtonElement>(
       '.config-output-container button, .buttons-wrapper button'
@@ -81,6 +88,7 @@ export default class Driver {
   onConfigFormReset() {
     this.setConfigOutputTextAreaValue('');
     this.setButtonsDisableState(true);
+    this.setConfigOutputTextAreaDisableState(true);
     this.destroyOtpField();
     this.otpField = undefined;
     this.otpFieldConfig = undefined;
@@ -94,6 +102,7 @@ export default class Driver {
     this.otpFieldConfig = config;
     this.setConfigOutputTextAreaValue(JSON.stringify(this.otpFieldConfig));
     this.setButtonsDisableState(false);
+    this.setConfigOutputTextAreaDisableState(false);
     this.buildOtpField();
   }
 
@@ -136,6 +145,7 @@ export default class Driver {
     const container = document.createElement('div');
     container.className = 'config-output-container';
 
+    container.appendChild(this.configOutputLabel);
     container.appendChild(this.configOutputTextArea);
     container.appendChild(this.copyOtpFieldConfigButton);
 
@@ -152,11 +162,22 @@ export default class Driver {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  get configOutputLabel() {
+    const label = document.createElement('label');
+
+    label.innerText = 'OTP Field Config: ';
+    label.setAttribute('for', 'config-output-textarea');
+
+    return label;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   get configOutputTextArea() {
     const textarea = document.createElement('textarea');
     textarea.id = 'config-output-textarea';
     textarea.rows = 2;
     textarea.readOnly = true;
+    textarea.disabled = true;
     return textarea;
   }
 
